@@ -1,97 +1,70 @@
-# DataSentry
+DataSentry
 
-> A production-oriented Python library for detecting structural dataset issues before machine learning model training.
+Proactive dataset validation for reliable machine learning systems.
 
-DataSentry is a lightweight and extensible data validation framework designed to identify critical data problems early in the ML lifecycle. It helps prevent silent performance degradation, misleading validation metrics, and deployment failures caused by poor dataset quality.
+DataSentry is a production-focused Python library designed to detect structural dataset issues before model training begins. It provides automated diagnostics to help prevent silent performance degradation, misleading evaluation metrics, and costly deployment failures.
 
----
+Modern ML systems fail more often due to data problems than model architecture. DataSentry ensures your data is trustworthy before your model goes to production.
 
-## Table of Contents
+Why DataSentry?
 
-- [Overview](#overview)
-- [Motivation](#motivation)
-- [Features](#features)
-- [Installation](#installation)
-- [Requirements](#requirements)
-- [Quick Start](#quick-start)
-- [Detailed Usage](#detailed-usage)
-- [Configuration](#configuration)
-- [Architecture](#architecture)
-- [Running Tests](#running-tests)
-- [Development Setup](#development-setup)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
+Machine learning pipelines commonly suffer from:
 
----
+Severe class imbalance
 
-## Overview
+Noisy or inconsistent labels
 
-DataSentry provides automated dataset diagnostics to ensure data reliability before model training begins.
+Hidden data leakage
 
-It detects:
+Extreme outliers
 
-- Class imbalance
-- Label noise
-- Data leakage
-- Outliers
-- Distribution shift
+Distribution shift between datasets
 
-The library is model-agnostic and can be integrated into any ML workflow.
+These issues often go unnoticed until late in development — or worse, after deployment.
 
----
+DataSentry provides structured, automated checks to identify these risks early.
 
-## Motivation
+Core Capabilities
+Class Imbalance Detection
 
-Machine learning systems often fail due to data quality issues rather than model complexity. Common failure scenarios include:
+Evaluates class distribution and computes imbalance metrics to detect biased datasets.
 
-- Severe class imbalance causing biased predictions
-- Noisy or inconsistent labels reducing generalization
-- Data leakage inflating validation accuracy
-- Outliers distorting feature distributions
-- Distribution drift breaking deployed models
+Label Noise Detection
 
-DataSentry addresses these problems proactively through automated checks.
+Identifies suspicious label patterns that may reduce model generalization.
 
----
+Data Leakage Detection
 
-## Features
+Flags features highly correlated with the target variable to prevent inflated validation performance.
 
-### 1. Class Imbalance Detection
-Evaluates class distribution and computes imbalance scores.
+Outlier Detection
 
-### 2. Label Noise Detection
-Identifies irregular label patterns that may indicate annotation errors.
+Detects abnormal samples that may distort training behavior and model stability.
 
-### 3. Data Leakage Detection
-Flags suspicious correlations between features and target variables.
+Distribution Shift Detection
 
-### 4. Outlier Detection
-Detects abnormal samples using statistical methods.
+Evaluates feature distribution differences to identify drift or dataset mismatch.
 
-### 5. Distribution Shift Detection
-Compares feature distributions to identify drift or mismatch.
-
----
-
-## Installation
+Installation
 
 Install from PyPI:
 
-```bash
 pip install datasentry
 
-```Install locally:
+
+Install from source:
+
 pip install .
 
-### Requirements
+Requirements
 
 Python 3.9+
+
 numpy
+
 pandas
 
-### Quick Start
-
+Quick Start
 import numpy as np
 from datasentry import analyze
 
@@ -104,7 +77,8 @@ report = analyze(X=X, y=y)
 print(report)
 
 
-```Example output:
+Example structured output:
+
 {
     "imbalance": {
         "imbalance_score": 9.0,
@@ -124,10 +98,9 @@ print(report)
     }
 }
 
-### Detailed Usage
-You can customize analysis thresholds using configuration parameters:
+Advanced Usage
 
-from datasentry import analyze
+Custom thresholds can be configured to control sensitivity:
 
 report = analyze(
     X=X,
@@ -137,9 +110,89 @@ report = analyze(
     leakage_threshold=0.9
 )
 
-Each detector returns structured diagnostic metrics that can be used for:
 
-Automated pipeline validation
-CI-based dataset checks
-Pre-training quality gates
-Data monitoring workflows
+This enables integration into:
+
+CI pipelines
+
+Pre-training validation steps
+
+Automated ML workflows
+
+Data quality monitoring systems
+
+Architecture
+datasentry/
+│
+├── detectors/
+│   ├── imbalance.py
+│   ├── label_noise.py
+│   ├── leakage.py
+│   ├── outliers.py
+│   └── shift.py
+│
+├── analyzer.py
+├── config.py
+├── report.py
+├── utils.py
+└── fixer.py
+
+
+Design principles:
+
+Modular detector-based design
+
+Clear separation of concerns
+
+Structured and extensible reporting
+
+Test-covered components
+
+CI-enabled development workflow
+
+Running Tests
+pytest
+
+Development Setup
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+# source .venv/bin/activate   # macOS/Linux
+
+pip install -e .
+pip install pytest
+
+Roadmap
+
+Command-line interface (CLI)
+
+Visualization utilities
+
+Enhanced statistical leakage detection
+
+Automated remediation suggestions
+
+scikit-learn pipeline integration
+
+Production drift monitoring
+
+Contributing
+
+Contributions are welcome. Please ensure:
+
+Clear documentation
+
+Unit test coverage
+
+Consistent code standards
+
+Descriptive commit messages
+
+License
+
+MIT License
+
+Philosophy
+
+Reliable machine learning begins with reliable data.
+
+DataSentry focuses on structural dataset validation to reduce downstream debugging effort, improve model robustness, and increase production reliability.
