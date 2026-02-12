@@ -1,146 +1,94 @@
-YES ✅ I understand now.
+# 🚀 DataSentry
 
-You don’t want just “professional text”.
+![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Status](https://img.shields.io/badge/status-active-success.svg)
 
-You want:
+> Proactive dataset validation for reliable machine learning systems.
 
-🔥 Attractive
+DataSentry is a lightweight, production-focused Python library that
+detects structural dataset issues **before model training begins**.\
+It helps prevent silent performance degradation, misleading validation
+metrics, and costly deployment failures.
 
-🧭 Easy to scan
+Because in machine learning --- **bad data breaks good models.**
 
-🧠 Well structured
+------------------------------------------------------------------------
 
-✨ Visually clean
+## 🚩 Why DataSentry?
 
-📌 Like a top GitHub ML repo
+Modern ML pipelines frequently suffer from hidden dataset issues:
 
-🧑‍💻 Recruiter-friendly
+  Problem                 Risk
+  ----------------------- ------------------------------
+  ⚖️ Class Imbalance      Biased predictions
+  🏷 Label Noise           Reduced generalization
+  🔓 Data Leakage         Inflated validation accuracy
+  📉 Outliers             Distorted feature space
+  🔄 Distribution Shift   Poor real-world performance
 
-📈 Startup-quality presentation
+DataSentry automatically identifies these risks early in your workflow.
 
-Good. Let’s fix it properly.
+------------------------------------------------------------------------
 
-Below is a beautiful, section-wise, modern GitHub README.
-Copy everything into your README.md.
+## 🧠 Core Features
 
-🚀 DataSentry
+### ⚖️ Class Imbalance Detection
 
-Proactive dataset validation for reliable machine learning systems
+Evaluates label distribution and computes normalized imbalance metrics.
 
-DataSentry is a lightweight, production-oriented Python library that detects critical dataset issues before model training begins.
+### 🏷 Label Noise Detection
 
-Because most ML failures are data failures.
+Flags suspicious label inconsistencies affecting model learning.
 
-📌 Why DataSentry?
+### 🔓 Data Leakage Detection
 
-Modern ML pipelines silently break due to:
+Identifies features overly correlated with target variables.
 
-⚖️ Severe class imbalance
+### 📉 Outlier Detection
 
-🏷 Noisy or inconsistent labels
+Detects anomalous samples that may distort training.
 
-🔓 Hidden data leakage
+### 🔄 Distribution Shift Detection
 
-📉 Extreme outliers
+Compares feature distributions to detect dataset drift.
 
-🔄 Distribution shift
+------------------------------------------------------------------------
 
-These issues often surface after deployment — when it’s expensive.
+## 📦 Installation
 
-DataSentry identifies them early, automatically.
+Install from PyPI:
 
-🧠 What It Detects
-⚖️ Class Imbalance
-
-Evaluates class distribution and computes imbalance ratios to detect biased datasets.
-
-🏷 Label Noise
-
-Flags suspicious label distributions that may reduce generalization.
-
-🔓 Data Leakage
-
-Detects features strongly correlated with target variables.
-
-📉 Outliers
-
-Identifies abnormal samples that may distort training.
-
-🔄 Distribution Shift
-
-Compares feature distributions to detect drift or mismatch.
-
-📦 Installation
-From PyPI
+``` bash
 pip install datasentry
+```
 
-From Source
+Or install locally:
+
+``` bash
 pip install .
+```
 
-⚡ Quick Example
+------------------------------------------------------------------------
+
+## ⚡ Quick Start
+
+``` python
 import numpy as np
 from datasentry import analyze
 
-# Sample dataset
 X = np.random.randn(100, 5)
 y = np.array([0] * 90 + [1] * 10)
 
 report = analyze(X=X, y=y)
-
 print(report)
+```
 
-Example Output
-{
-    "imbalance": {
-        "imbalance_score": 9.0,
-        "is_imbalanced": True
-    },
-    "outliers": {
-        "outlier_fraction": 0.05
-    },
-    "label_noise": {
-        "noise_score": 0.08
-    },
-    "leakage": {
-        "leakage_detected": False
-    },
-    "shift": {
-        "shift_score": 0.02
-    }
-}
+------------------------------------------------------------------------
 
-🏗 Architecture
-datasentry/
-│
-├── detectors/
-│   ├── imbalance.py
-│   ├── label_noise.py
-│   ├── leakage.py
-│   ├── outliers.py
-│   └── shift.py
-│
-├── analyzer.py
-├── config.py
-├── report.py
-├── utils.py
-└── fixer.py
+## ⚙ Advanced Usage
 
-Design Principles
-
-🔹 Modular detector-based architecture
-
-🔹 Clear separation of analysis & configuration
-
-🔹 Structured reporting
-
-🔹 CI-tested components
-
-🔹 Lightweight and extensible
-
-⚙ Advanced Usage
-
-Customize detection sensitivity:
-
+``` python
 report = analyze(
     X=X,
     y=y,
@@ -148,63 +96,68 @@ report = analyze(
     outlier_threshold=0.1,
     leakage_threshold=0.9
 )
+```
 
+------------------------------------------------------------------------
 
-Integrate into:
+## 🏗 Architecture
 
-CI pipelines
+    datasentry/
+    │
+    ├── detectors/
+    │   ├── imbalance.py
+    │   ├── label_noise.py
+    │   ├── leakage.py
+    │   ├── outliers.py
+    │   └── shift.py
+    │
+    ├── analyzer.py
+    ├── config.py
+    ├── report.py
+    ├── utils.py
+    └── fixer.py
 
-Data validation workflows
+------------------------------------------------------------------------
 
-Pre-training checks
+## 🧪 Running Tests
 
-Automated ML systems
-
-🧪 Running Tests
+``` bash
 pytest
+```
 
-🛠 Development Setup
-python -m venv .venv
-.venv\Scripts\activate        # Windows
-# source .venv/bin/activate   # macOS/Linux
+------------------------------------------------------------------------
 
-pip install -e .
-pip install pytest
+## 🗺 Roadmap
 
-🗺 Roadmap
+-   CLI interface\
+-   Visualization dashboard\
+-   Advanced statistical leakage detection\
+-   Automated remediation suggestions\
+-   scikit-learn pipeline integration\
+-   Production drift monitoring
 
- CLI interface
+------------------------------------------------------------------------
 
- Visualization dashboard
+## 🤝 Contributing
 
- Advanced leakage detection
+Contributions are welcome. Please ensure:
 
- Automated remediation suggestions
+-   Clear documentation\
+-   Proper unit test coverage\
+-   Consistent coding standards\
+-   Descriptive commit messages
 
- scikit-learn pipeline integration
+------------------------------------------------------------------------
 
- Production drift monitoring
-
-🤝 Contributing
-
-Contributions are welcome.
-
-Please ensure:
-
-Clear documentation
-
-Proper unit tests
-
-Consistent code style
-
-Meaningful commit messages
-
-📄 License
+## 📄 License
 
 MIT License
 
-💡 Philosophy
+------------------------------------------------------------------------
+
+## 💡 Philosophy
 
 Reliable machine learning begins with reliable data.
 
-DataSentry ensures structural dataset integrity before model optimization — reducing downstream debugging and improving production stability.
+DataSentry focuses on structural dataset validation to reduce debugging
+effort, improve model robustness, and increase production stability.
