@@ -80,3 +80,66 @@ Install from PyPI:
 
 ```bash
 pip install datasentry
+
+```Install locally:
+pip install .
+
+### Requirements
+
+Python 3.9+
+numpy
+pandas
+
+### Quick Start
+
+import numpy as np
+from datasentry import analyze
+
+# Example dataset
+X = np.random.randn(100, 5)
+y = np.array([0] * 90 + [1] * 10)
+
+report = analyze(X=X, y=y)
+
+print(report)
+
+
+```Example output:
+{
+    "imbalance": {
+        "imbalance_score": 9.0,
+        "is_imbalanced": True
+    },
+    "outliers": {
+        "outlier_fraction": 0.05
+    },
+    "label_noise": {
+        "noise_score": 0.08
+    },
+    "leakage": {
+        "leakage_detected": False
+    },
+    "shift": {
+        "shift_score": 0.02
+    }
+}
+
+### Detailed Usage
+You can customize analysis thresholds using configuration parameters:
+
+from datasentry import analyze
+
+report = analyze(
+    X=X,
+    y=y,
+    imbalance_threshold=3.0,
+    outlier_threshold=0.1,
+    leakage_threshold=0.9
+)
+
+Each detector returns structured diagnostic metrics that can be used for:
+
+Automated pipeline validation
+CI-based dataset checks
+Pre-training quality gates
+Data monitoring workflows
