@@ -1,41 +1,33 @@
-# datasentry/detectors/label_noise.py
+from typing import Dict
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from .._utils import validate_X, validate_y
+from sklearn.model_selection import StratifiedKFold
+from .._utils import to_numpy, validate_y
 
-def detect(X, y, threshold: float = 0.8) -> dict:
 
-    X = validate_X(X)
+def detect(X, y, threshold: float, random_state: int) -> Dict[str, float]:
+    """
+    Detect label noise using cross-validated disagreement.
+    """
+
+    X = to_numpy(X)
     y = validate_y(y)
 
     if len(np.unique(y)) < 2:
-        return {
-            "status": "skipped",
-            "reason": "Single class only",
-            "noise_detected": False
-        }
+        return {"noise_ratio": 0.0, "is_problematic": False, "severity": 0.0}
 
-    model = RandomForestClassifier(
-        n_estimators=100,
-        random_state=42
-    )
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
+    preds = np.zeros(len(y))
 
-    model.fit(X, y)
+    for train_idx, val_idx in skf.split(X, y):
+        clf = RandomForestClassifier(random_state=random_state)
+        clf.fit(X[train_idx], y[train_idx])
+        preds[val_idx] = clf.predict(X[val_idx])
 
-    probs = model.predict_proba(X)
-    preds = model.predict(X)
-
-    disagreement = preds != y
-    high_conf_wrong = [
-        i for i, wrong in enumerate(disagreement)
-        if wrong and np.max(probs[i]) > threshold
-    ]
-
-    noise_ratio = len(high_conf_wrong) / len(y)
+    noise_ratio = float((preds != y).mean())
 
     return {
-        "status": "warning" if noise_ratio > 0.05 else "ok",
-        "num_suspected_noisy_labels": len(high_conf_wrong),
-        "noise_ratio": float(noise_ratio),
-        "noise_detected": bool(noise_ratio > 0.05)
+        "noise_ratio": noise_ratio,
+        "is_problematic": bool(noise_ratio > threshold),
+        "severity": noise_ratio,
     }

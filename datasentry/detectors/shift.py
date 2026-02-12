@@ -1,33 +1,46 @@
-# datasentry/detectors/shift.py
 import numpy as np
-from scipy.stats import ks_2samp
-from .._utils import validate_X
+from typing import Dict
+from .._utils import to_numpy
 
-def detect(X_train, X_test, alpha: float = 0.05) -> dict:
+
+def _psi(expected: np.ndarray, actual: np.ndarray, bins: int = 10) -> float:
+    """
+    Compute Population Stability Index.
+    """
+
+    breakpoints = np.percentile(expected, np.linspace(0, 100, bins + 1))
+
+    expected_counts = np.histogram(expected, bins=breakpoints)[0]
+    actual_counts = np.histogram(actual, bins=breakpoints)[0]
+
+    expected_perc = expected_counts / len(expected)
+    actual_perc = actual_counts / len(actual)
+
+    psi = np.sum(
+        (expected_perc - actual_perc)
+        * np.log((expected_perc + 1e-12) / (actual_perc + 1e-12))
+    )
+
+    return float(psi)
+
+
+def detect(X_train, X_test, threshold: float) -> Dict[str, float]:
 
     if X_test is None:
-        return {
-            "status": "skipped",
-            "reason": "X_test not provided",
-            "shift_detected": False
-        }
+        return {"psi": 0.0, "is_problematic": False, "severity": 0.0}
 
-    X_train = validate_X(X_train)
-    X_test = validate_X(X_test)
+    X_train = to_numpy(X_train)
+    X_test = to_numpy(X_test)
 
-    if X_train.shape[1] != X_test.shape[1]:
-        raise ValueError("Train and test must have same number of features.")
+    psi_values = [
+        _psi(X_train[:, i], X_test[:, i])
+        for i in range(X_train.shape[1])
+    ]
 
-    shifted = []
-
-    for i in range(X_train.shape[1]):
-        _, p_value = ks_2samp(X_train[:, i], X_test[:, i])
-        shifted.append(p_value < alpha)
-
-    shifted = np.array(shifted)
+    mean_psi = float(np.mean(psi_values))
 
     return {
-        "status": "warning" if shifted.any() else "ok",
-        "num_shifted_features": int(shifted.sum()),
-        "shift_detected": bool(shifted.any())
+        "psi": mean_psi,
+        "is_problematic": bool(mean_psi > threshold),
+        "severity": mean_psi,
     }

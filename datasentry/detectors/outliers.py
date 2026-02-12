@@ -1,23 +1,25 @@
-# datasentry/detectors/outliers.py
-import numpy as np
-from .._utils import validate_X
+from typing import Dict
+from sklearn.ensemble import IsolationForest
+from .._utils import to_numpy
 
-def detect(X, z_threshold: float = 3.0) -> dict:
 
-    X = validate_X(X)
+def detect(X, contamination: float, random_state: int) -> Dict[str, float]:
+    """
+    Detect outliers using Isolation Forest.
+    """
 
-    mean = np.mean(X, axis=0)
-    std = np.std(X, axis=0)
-    std[std == 0] = 1e-8
+    X = to_numpy(X)
 
-    z_scores = np.abs((X - mean) / std)
-    outlier_mask = (z_scores > z_threshold).any(axis=1)
+    model = IsolationForest(
+        contamination=contamination,
+        random_state=random_state,
+    )
 
-    ratio = float(outlier_mask.mean())
+    preds = model.fit_predict(X)
+    outlier_ratio = (preds == -1).mean()
 
     return {
-        "status": "warning" if ratio > 0 else "ok",
-        "num_outliers": int(outlier_mask.sum()),
-        "outlier_ratio": ratio,
-        "is_problematic": bool(ratio > 0)
+        "outlier_ratio": float(outlier_ratio),
+        "is_problematic": bool(outlier_ratio > contamination),
+        "severity": float(outlier_ratio),
     }

@@ -1,30 +1,22 @@
-# datasentry/detectors/leakage.py
+from typing import Dict
 import numpy as np
-from .._utils import validate_X, validate_y
+from sklearn.feature_selection import mutual_info_classif
+from .._utils import to_numpy, validate_y
 
-def detect(X, y, threshold: float = 0.95) -> dict:
 
-    X = validate_X(X)
+def detect(X, y, threshold: float) -> Dict[str, float]:
+    """
+    Detect potential feature leakage via mutual information.
+    """
+
+    X = to_numpy(X)
     y = validate_y(y)
 
-    if not np.issubdtype(y.dtype, np.number):
-        return {
-            "status": "skipped",
-            "reason": "Non-numeric target",
-            "leakage_detected": False
-        }
-
-    correlations = []
-
-    for i in range(X.shape[1]):
-        corr = np.corrcoef(X[:, i], y)[0, 1]
-        correlations.append(abs(corr))
-
-    correlations = np.nan_to_num(correlations)
-    suspicious = np.array(correlations) > threshold
+    mi_scores = mutual_info_classif(X, y)
+    max_mi = float(np.max(mi_scores))
 
     return {
-        "status": "warning" if suspicious.any() else "ok",
-        "num_suspicious_features": int(suspicious.sum()),
-        "leakage_detected": bool(suspicious.any())
+        "max_mutual_information": max_mi,
+        "is_problematic": bool(max_mi > threshold),
+        "severity": max_mi,
     }
