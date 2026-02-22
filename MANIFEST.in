@@ -1,0 +1,27 @@
+# Include additional files in the distribution
+
+# Documentation
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+
+# Requirements
+include requirements.txt
+include requirements-dev.txt
+
+# Type hints
+recursive-include src/datasentry py.typed
+
+# Exclude
+exclude .github
+exclude docs/_build
+exclude tests
+exclude examples
+exclude .gitignore
+exclude .pre-commit-config.yaml
+
+recursive-exclude .github *
+recursive-exclude docs/_build *
+recursive-exclude tests *
+recursive-exclude examples *
